@@ -162,6 +162,17 @@ def test_recoverable_json(app, client, get_message):
         assert response.status_code == 200
         token = requests[0]["token"]
 
+        # Test invalid email format
+        response = client.post(
+            "/reset",
+            data='{"email": "test@mail"}',
+            headers={"Content-Type": "application/json"},
+        )
+        assert response.status_code == 400
+        assert response.json["response"]["errors"]["email"][0].encode(
+            "utf-8"
+        ) == get_message("INVALID_EMAIL_ADDRESS")
+
         # Test invalid email
         response = client.post(
             "/reset",
